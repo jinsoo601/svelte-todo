@@ -1,4 +1,3 @@
-import { browser } from '$app/environment';
 import { DAILY_TODOS, type Todo } from '$lib';
 import { writable } from 'svelte/store';
 
@@ -10,16 +9,14 @@ function isEmpty(arr: Todo[]) {
 }
 
 function createTodoStore() {
-	const { subscribe, set, update } = writable<Todo[]>([]);
+	const todosFromLocalStorage = JSON.parse(localStorage.getItem(TODO_KEY) || '[]');
+	const { subscribe, set, update } = writable<Todo[]>(todosFromLocalStorage);
 	return {
 		subscribe,
 		set,
 		update,
 		init: () => {
 			const today = new Date().toLocaleDateString();
-			if (!browser) {
-				return;
-			}
 			if (today !== localStorage.getItem(DATE_KEY)) {
 				set(structuredClone(DAILY_TODOS));
 				localStorage.setItem(DATE_KEY, today);
@@ -38,7 +35,5 @@ function createTodoStore() {
 export const todoStore = createTodoStore();
 
 todoStore.subscribe((todos) => {
-	if (browser) {
-		localStorage.setItem(TODO_KEY, JSON.stringify(todos));
-	}
+	localStorage.setItem(TODO_KEY, JSON.stringify(todos));
 });
