@@ -22,7 +22,6 @@ function createTodoStore() {
 				localStorage.setItem(DATE_KEY, today);
 			} else {
 				const todosFromLocalStorage = JSON.parse(localStorage.getItem(TODO_KEY) || '[]');
-				console.log('reading from local storage', todosFromLocalStorage);
 				const todos = isEmpty(todosFromLocalStorage)
 					? structuredClone(DAILY_TODOS)
 					: todosFromLocalStorage;
