@@ -16,12 +16,20 @@ function createTodoStore() {
 		set,
 		update,
 		init: () => {
+			const todosFromLocalStorage: Todo[] = JSON.parse(localStorage.getItem(TODO_KEY) || '[]');
 			const today = new Date().toLocaleDateString();
 			if (today !== localStorage.getItem(DATE_KEY)) {
-				set(structuredClone(DAILY_TODOS));
+				const dailyTodoIds = DAILY_TODOS.map(({ id }) => id);
+				const overflow = todosFromLocalStorage
+					.filter((t) => !dailyTodoIds.includes(t.id))
+					.filter((t) => !t.done);
+				const todosForNewDay: Todo[] = [...DAILY_TODOS, ...overflow].map((t, id) => ({
+					...t,
+					id
+				}));
+				set(todosForNewDay);
 				localStorage.setItem(DATE_KEY, today);
 			} else {
-				const todosFromLocalStorage = JSON.parse(localStorage.getItem(TODO_KEY) || '[]');
 				const todos = isEmpty(todosFromLocalStorage)
 					? structuredClone(DAILY_TODOS)
 					: todosFromLocalStorage;
