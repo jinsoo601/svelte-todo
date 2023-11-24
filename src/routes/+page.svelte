@@ -2,6 +2,7 @@
 	import type { EventHandler } from 'svelte/elements';
 	import { todoStore } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
 
 	let newTodo = '';
 	let isEditing = false;
@@ -36,7 +37,7 @@
 
 <div class="container h-full flex flex-col gap-4 p-4 md:p-8 md:items-center">
 	{#each $todoStore as todo}
-		<label class="flex items-center gap-4 md:w-96">
+		<label class="flex items-center gap-4 md:w-96" in:fly={{ x: -50, duration: 500 }}>
 			<input class="checkbox" type="checkbox" bind:checked={todo.done} />
 			<p class="flex-grow flex justify-between">
 				<span class:line-through={todo.done} class:opacity-50={todo.done}>{todo.description}</span>
@@ -47,6 +48,7 @@
 	{#if isEditing}
 		<form on:submit|preventDefault={onSubmitNew}>
 			<input
+				in:fade
 				class="input"
 				type="text"
 				use:autofocus
